@@ -9,6 +9,13 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   BETTER_AUTH_SECRET: z.string().min(10),
   BETTER_AUTH_URL: z.string().url(),
+  FIREBASE_SERVICE_ACCOUNT_JSON: z.string().optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.string().optional(),
+  SMTP_SECURE: z.string().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_FROM: z.string().optional(),
 });
 
 export const env = envSchema.parse(process.env);
