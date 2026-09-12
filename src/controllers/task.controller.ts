@@ -37,7 +37,8 @@ export async function createTask(req: Request, res: Response): Promise<void> {
 export async function getTasks(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user?.id;
-    const { page = "1", limit = "10" } = req.query;
+    const page = String(req.query.page || "1");
+    const limit = String(req.query.limit || "10");
 
     if (!userId) {
       sendError(res, "Unauthorized", 401);
@@ -53,7 +54,7 @@ export async function getTasks(req: Request, res: Response): Promise<void> {
 
 export async function getTaskById(req: Request, res: Response): Promise<void> {
   try {
-    const taskId = String(req.params.taskId || req.params.id);
+    const id = String(req.params.id || req.params.taskId);
     const userId = req.user?.id;
 
     if (!userId) {
@@ -61,7 +62,7 @@ export async function getTaskById(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const task = await taskService.getTaskById(taskId, userId);
+    const task = await taskService.getTaskById(id, userId);
     if (!task) {
       sendError(res, "Task not found", 404);
       return;
@@ -75,7 +76,7 @@ export async function getTaskById(req: Request, res: Response): Promise<void> {
 
 export async function updateTask(req: Request, res: Response): Promise<void> {
   try {
-    const taskId = String(req.params.taskId || req.params.id);
+    const id = String(req.params.id || req.params.taskId);
     const userId = req.user?.id;
     const updates = req.body;
 
@@ -84,7 +85,7 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const task = await taskService.updateTask(taskId, userId, updates);
+    const task = await taskService.updateTask(id, userId, updates);
     if (!task) {
       sendError(res, "Task not found", 404);
       return;
@@ -98,7 +99,7 @@ export async function updateTask(req: Request, res: Response): Promise<void> {
 
 export async function deleteTask(req: Request, res: Response): Promise<void> {
   try {
-    const taskId = String(req.params.taskId || req.params.id);
+    const id = String(req.params.id || req.params.taskId);
     const userId = req.user?.id;
 
     if (!userId) {
@@ -106,7 +107,7 @@ export async function deleteTask(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const deleted = await taskService.deleteTask(taskId, userId);
+    const deleted = await taskService.deleteTask(id, userId);
     if (!deleted) {
       sendError(res, "Task not found", 404);
       return;
