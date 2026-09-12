@@ -7,11 +7,6 @@ datasource db {
   provider = "postgresql"
 }
 
-
-// ==========================================
-// BETTER AUTH COMPATIBLE MODELS
-// ==========================================
-
 enum Role {
   USER
   ADMIN
@@ -27,16 +22,13 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  // --- App Specific User Fields ---
-  timezone      String    @default("UTC") // Auto-detected or user specified (e.g., "Asia/Dhaka")
+  timezone      String    @default("UTC")
   currentStreak Int       @default(0)
   longestStreak Int       @default(0)
 
-  // --- Better Auth Relations ---
   sessions      Session[]
   accounts      Account[]
 
-  // --- Application Relations ---
   deviceTokens         DeviceToken[]
   tasks                Task[]
   taskOccurrences      TaskOccurrence[]
@@ -73,7 +65,7 @@ model Account {
   refreshTokenExpiresAt DateTime?
   scope                 String?
   idToken               String?
-  password              String?   // Used by Better Auth credentials provider
+  password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
@@ -84,8 +76,8 @@ model Account {
 
 model Verification {
   id         String   @id @default(cuid())
-  identifier String   // Target Email or Identifier
-  value      String   // OTP Code or Token
+  identifier String
+  value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -93,15 +85,11 @@ model Verification {
   @@map("verification")
 }
 
-// ==========================================
-// FCM PUSH NOTIFICATION DEVICE TOKENS
-// ==========================================
-
 model DeviceToken {
   id         String   @id @default(cuid())
   userId     String
   fcmToken   String   @unique
-  deviceType String?  // e.g. "chrome", "android", "ios"
+  deviceType String?
   isActive   Boolean  @default(true)
   lastUsedAt DateTime @default(now())
   createdAt  DateTime @default(now())
@@ -112,13 +100,9 @@ model DeviceToken {
   @@map("device_token")
 }
 
-// ==========================================
-// TASK & RECURRING OCCURRENCE ENGINE
-// ==========================================
-
 enum Urgency {
-  NORMAL    // No alert
-  MEDIUM    // Push Notification WITH sound
+  NORMAL
+  MEDIUM
 }
 
 enum RecurrenceUnit {
@@ -137,15 +121,12 @@ model Task {
   userId               String
   title                String
   description          String?
-  isRequired           Boolean         @default(false) // Required tasks determine streak success
+  isRequired           Boolean         @default(false)
   urgency              Urgency         @default(NORMAL)
-  earlyReminderMinutes Int?            // Presets like 5, 10, 15, or custom minutes before
-
-  // Finite Recurrence Configuration
-  intervalValue        Int?            // e.g., 1, 2, 5
-  intervalUnit         RecurrenceUnit? // HOUR or DAY
-  repeatCount          Int             @default(1) // Number of finite occurrences (1 = Non-recurring)
-
+  earlyReminderMinutes Int?
+  intervalValue        Int?
+  intervalUnit         RecurrenceUnit?
+  repeatCount          Int             @default(1)
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
 
@@ -159,21 +140,15 @@ model TaskOccurrence {
   id                   String           @id @default(cuid())
   taskId               String
   userId               String
-  
-  scheduledAt          DateTime         // UTC Instant for task time
-  reminderScheduledAt  DateTime?        // UTC Instant for early reminder
+  scheduledAt          DateTime
+  reminderScheduledAt  DateTime?
   status               OccurrenceStatus @default(PENDING)
-  completedAt          DateTime?        // Recorded when completed before local midnight
-
-  isRequired           Boolean          @default(false) // Preserves historical requirement status
-  
-  // Notification Delivery & Duplicate Prevention Flags
+  completedAt          DateTime?
+  isRequired           Boolean          @default(false)
   earlyReminderSent    Boolean          @default(false)
   earlyReminderSentAt  DateTime?
-  
   scheduledAlertSent   Boolean          @default(false)
   scheduledAlertSentAt DateTime?
-
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
 
@@ -184,29 +159,22 @@ model TaskOccurrence {
   @@map("task_occurrence")
 }
 
-// ==========================================
-// DAILY ACTIVITY & ANALYTICS
-// ==========================================
-
 enum DailyStatus {
-  SUCCESSFUL    // Required task(s) existed AND ALL required occurrences completed
-  MISSED        // Required task(s) existed BUT >=1 required occurrence missed
-  NO_ACTIVITY   // Zero task occurrences existed for that calendar day
-  OPTIONAL_ONLY // Task occurrences existed, BUT zero required occurrences
+  SUCCESSFUL
+  MISSED
+  NO_ACTIVITY
+  OPTIONAL_ONLY
 }
 
 model DailyActivity {
   id                     String      @id @default(cuid())
   userId                 String
-  date                   String      // Format: "YYYY-MM-DD" in user's local timezone
-
+  date                   String
   status                 DailyStatus
-
-  totalRequiredTasks     Int         @default(0) // Total required occurrences on this day
-  completedRequiredTasks Int         @default(0) // Completed required occurrences on this day
-  totalOptionalTasks     Int         @default(0) // Total non-required occurrences on this day
-  completedOptionalTasks Int         @default(0) // Completed non-required occurrences on this day
-
+  totalRequiredTasks     Int         @default(0)
+  completedRequiredTasks Int         @default(0)
+  totalOptionalTasks     Int         @default(0)
+  completedOptionalTasks Int         @default(0)
   createdAt              DateTime    @default(now())
   updatedAt              DateTime    @updatedAt
 
@@ -217,25 +185,19 @@ model DailyActivity {
   @@map("daily_activity")
 }
 
-// ==========================================
-// YEARLY LEADERBOARD & ANNUAL REPORTS
-// ==========================================
-
 model YearlyReport {
   id                    String   @id @default(cuid())
   userId                String
-  year                  Int      
-
-  yearlyConsistencyPct  Float    // Score based on Consistency Formula
+  year                  Int
+  yearlyConsistencyPct  Float
   totalTasksCompleted   Int      @default(0)
   successfulDaysCount   Int      @default(0)
   missedDaysCount       Int      @default(0)
   noActivityDaysCount   Int      @default(0)
   optionalOnlyDaysCount Int      @default(0)
   streakBreaksCount     Int      @default(0)
-  finalRank             Int?     // Final leaderboard position for that year
-
-  reportData            Json     // Stores complete monthly breakdown & statistics JSON
+  finalRank             Int?
+  reportData            Json
   createdAt             DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -247,15 +209,13 @@ model YearlyReport {
 model LeaderboardSnapshot {
   id                  String   @id @default(cuid())
   userId              String
-  year                Int      
+  year                Int
   rank                Int
-  
   currentStreakAtEnd  Int
   longestStreakAtEnd  Int
   consistencyPct      Float
   streakBreaks        Int
   totalCompletedTasks Int
-
   createdAt           DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -263,5 +223,4 @@ model LeaderboardSnapshot {
   @@unique([userId, year])
   @@map("leaderboard_snapshot")
 }
-
 
