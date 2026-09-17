@@ -3,6 +3,8 @@ import { sendOtp, verifyOtp } from "@/services/otp.service.js";
 import { auth } from "@/lib/auth.js";
 import { sendSuccess, sendError } from "@/utils/response.util.js";
 import { sendOtpSchema, verifyOtpSchema, loginSchema, resetPasswordSchema } from "@/validations/auth.validation.js";
+import { prisma } from "@/config/prisma.js";
+import bcrypt from "bcryptjs";
 
 // ================================
 // Send OTP to user's email
@@ -107,15 +109,30 @@ export const handleResetPassword = async (req: Request, res: Response) => {
   const { email, otp, newPassword } = parseResult.data;
 
   try {
-    // 1. Verify OTP
+    // Verify OTP
     await verifyOtp(email, otp);
 
-    // 2. Update password in Better-Auth
-    await auth.api.setPassword({
-      body: {
-        newPassword,
+    // Hash new password using bcryptjs
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Find User by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return sendError(res, "User not found", 404);
+    }
+
+    // Update password in Better-Auth's credential Account table
+    await prisma.account.updateMany({
+      where: {
+        userId: user.id,
+        providerId: "credential",
       },
-      headers: req.headers,
+      data: {
+        password: hashedPassword,
+      },
     });
 
     return sendSuccess(res, "Password reset successfully. You can now login with your new password.");
@@ -123,3 +140,4 @@ export const handleResetPassword = async (req: Request, res: Response) => {
     return sendError(res, error.message || "Failed to reset password", 400);
   }
 };
+
