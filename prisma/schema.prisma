@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  timezone      String    @default("UTC")
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
+
+  sessions      Session[]
+  accounts      Account[]
+
+  deviceTokens         DeviceToken[]
+  tasks                Task[]
+  taskOccurrences      TaskOccurrence[]
+  dailyActivities      DailyActivity[]
+  yearlyReports        YearlyReport[]
+  leaderboardSnapshots LeaderboardSnapshot[]
+
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("verification")
+}
+
+model DeviceToken {
+  id         String   @id @default(cuid())
+  userId     String
+  fcmToken   String   @unique
+  deviceType String?
+  isActive   Boolean  @default(true)
+  lastUsedAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("device_token")
+}
+
+enum Urgency {
+  NORMAL
+  MEDIUM
+}
+
+enum RecurrenceUnit {
+  HOUR
+  DAY
+}
+
+enum OccurrenceStatus {
+  PENDING
+  COMPLETED
+  MISSED
+}
+
+model Task {
+  id                   String          @id @default(cuid())
+  userId               String
+  title                String
+  description          String?
+  isRequired           Boolean         @default(false)
+  urgency              Urgency         @default(NORMAL)
+  earlyReminderMinutes Int?
+  intervalValue        Int?
+  intervalUnit         RecurrenceUnit?
+  repeatCount          Int             @default(1)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  occurrences TaskOccurrence[]
+
+  @@map("task")
+}
+
+model TaskOccurrence {
+  id                   String           @id @default(cuid())
+  taskId               String
+  userId               String
+  scheduledAt          DateTime
+  reminderScheduledAt  DateTime?
+  status               OccurrenceStatus @default(PENDING)
+  completedAt          DateTime?
+  isRequired           Boolean          @default(false)
+  earlyReminderSent    Boolean          @default(false)
+  earlyReminderSentAt  DateTime?
+  scheduledAlertSent   Boolean          @default(false)
+  scheduledAlertSentAt DateTime?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, scheduledAt])
+  @@map("task_occurrence")
+}
+
+enum DailyStatus {
+  SUCCESSFUL
+  MISSED
+  NO_ACTIVITY
+  OPTIONAL_ONLY
+}
+
+model DailyActivity {
+  id                     String      @id @default(cuid())
+  userId                 String
+  date                   String
+  status                 DailyStatus
+  totalRequiredTasks     Int         @default(0)
+  completedRequiredTasks Int         @default(0)
+  totalOptionalTasks     Int         @default(0)
+  completedOptionalTasks Int         @default(0)
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, status])
+  @@map("daily_activity")
+}
+
+model YearlyReport {
+  id                    String   @id @default(cuid())
+  userId                String
+  year                  Int
+  yearlyConsistencyPct  Float
+  totalTasksCompleted   Int      @default(0)
+  successfulDaysCount   Int      @default(0)
+  missedDaysCount       Int      @default(0)
+  noActivityDaysCount   Int      @default(0)
+  optionalOnlyDaysCount Int      @default(0)
+  streakBreaksCount     Int      @default(0)
+  finalRank             Int?
+  reportData            Json
+  createdAt             DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, year])
+  @@map("yearly_report")
+}
+
+model LeaderboardSnapshot {
+  id                  String   @id @default(cuid())
+  userId              String
+  year                Int
+  rank                Int
+  currentStreakAtEnd  Int
+  longestStreakAtEnd  Int
+  consistencyPct      Float
+  streakBreaks        Int
+  totalCompletedTasks Int
+  createdAt           DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, year])
+  @@map("leaderboard_snapshot")
+}
+

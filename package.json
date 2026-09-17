@@ -1,0 +1,35 @@
+{
+  "name": "consista",
+  "version": "1.0.0",
+  "description": "Consista API, This is a Productivity Tracker Application",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "keywords": [],
+  "author": "Hasibur Rahman",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^26.5.0",
+    "@types/nodemailer": "^6.4.17",
+    "@types/pg": "^8.23.1",
+    "prisma": "^7.9.1",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.9.1",
+    "better-auth": "^1.7.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "firebase-admin": "^14.3.0",
+    "nodemailer": "^10.0.1",
+    "pg": "^8.23.0",
+    "zod": "^4.5.4"
+  }
+}
