@@ -1,11 +1,11 @@
 {
-  "name": "consista",
+  "name": "Consista",
   "version": "1.0.0",
-  "description": "Consista API, This is a Productivity Tracker Application",
+  "description": "Consista Server, This is a Productivity Tracker Application",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
+    "dev": "tsc && tsc-alias --outDir dist && node dist/server.js",
     "start": "node dist/server.js"
   },
   "keywords": [],
@@ -22,6 +22,7 @@
     "@types/pdfkit": "^0.17.6",
     "@types/pg": "^8.23.1",
     "prisma": "^7.9.1",
+    "tsc-alias": "^1.8.10",
     "tsx": "^4.23.13",
     "typescript": "^7.0.2"
   },

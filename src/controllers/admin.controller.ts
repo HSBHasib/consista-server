@@ -12,3 +12,4 @@ export const handleGetAdminMetrics = async (_req: Request, res: Response) => {
     return sendError(res, errorMessage, 500);
   }
 };
+

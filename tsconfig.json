@@ -2,12 +2,16 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["ESNext"],
+    "rootDir": "./src",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "outDir": "./dist",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
@@ -20,11 +24,9 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*", "generated/**/*"],
   "exclude": ["node_modules", "dist"]
 }
+
