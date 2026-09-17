@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { sendOtp, verifyOtp } from "@/services/otp.service.js";
 import { auth } from "@/lib/auth.js";
 import { sendSuccess, sendError } from "@/utils/response.util.js";
-import { sendOtpSchema, verifyOtpSchema, loginSchema } from "@/validations/auth.validation.js";
+import { sendOtpSchema, verifyOtpSchema, loginSchema, resetPasswordSchema } from "@/validations/auth.validation.js";
 
 // ================================
 // Send OTP to user's email
@@ -93,3 +93,33 @@ export const handleLogin = async (req: Request, res: Response) => {
   }
 };
 
+
+// ================================
+// Reset user's password
+// ================================
+export const handleResetPassword = async (req: Request, res: Response) => {
+  const parseResult = resetPasswordSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    const errorMessage = parseResult.error.issues[0]?.message || "Invalid input data";
+    return sendError(res, errorMessage, 400);
+  }
+
+  const { email, otp, newPassword } = parseResult.data;
+
+  try {
+    // 1. Verify OTP
+    await verifyOtp(email, otp);
+
+    // 2. Update password in Better-Auth
+    await auth.api.setPassword({
+      body: {
+        newPassword,
+      },
+      headers: req.headers,
+    });
+
+    return sendSuccess(res, "Password reset successfully. You can now login with your new password.");
+  } catch (error: any) {
+    return sendError(res, error.message || "Failed to reset password", 400);
+  }
+};

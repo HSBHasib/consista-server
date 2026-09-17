@@ -6,6 +6,7 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 import authRoutes from "@/routes/auth.route.js";
 import userRoutes from "@/routes/user.route.js";
+import taskRoutes from "@/routes/task.route.js";
 const app = express();
 
 // ==========================================
@@ -25,6 +26,7 @@ app.get("/", (_req: Request, res: Response) => {
 // API Routes
 app.use("/api/v1/auth", authRoutes);        // OTP Authentication Routes
 app.use("/api/v1/users", userRoutes);       // User Management Routes
+app.use("/api/v1/tasks", taskRoutes);       // Task Management Routes
 
 // Better Auth All Routes
 app.all("/api/auth/*path", toNodeHandler(auth));
