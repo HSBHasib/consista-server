@@ -35,7 +35,7 @@ export const apiRateLimiter = rateLimit({
 // ==================================
 export const contactRateLimiter = rateLimit({
   windowMs: 8 * 60 * 1000, // 8 minutes
-  max: 400, // Limit each IP to 6 requests per windowMs
+  max: 6, // Limit each IP to 6 requests per windowMs
   standardHeaders: true,
   legacyHeaders: false,
   message: {
