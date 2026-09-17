@@ -19,6 +19,7 @@
     "@types/node": "^26.5.0",
     "@types/node-cron": "^3.0.11",
     "@types/nodemailer": "^6.4.17",
+    "@types/pdfkit": "^0.17.6",
     "@types/pg": "^8.23.1",
     "prisma": "^7.9.1",
     "tsx": "^4.23.13",
@@ -36,6 +37,7 @@
     "firebase-admin": "^14.3.0",
     "node-cron": "^4.6.0",
     "nodemailer": "^10.0.1",
+    "pdfkit": "^0.20.2",
     "pg": "^8.23.0",
     "zod": "^4.5.4"
   }

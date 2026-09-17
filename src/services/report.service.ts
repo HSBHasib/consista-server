@@ -37,3 +37,31 @@ export const getLeaderboard = async (year: number, limit: number) => {
 };
 
 
+// ==========================
+// Get Top 10 Leaderboard Service
+// ==========================
+export const getTop10Leaderboard = async (year: number) => {
+  return await prisma.leaderboardSnapshot.findMany({
+    where: { year },
+    orderBy: [
+      { currentStreakAtEnd: "desc" },     // 1. Current streak
+      { longestStreakAtEnd: "desc" },     // 2. Longest streak
+      { consistencyPct: "desc" },         // 3. Consistency %
+      { streakBreaks: "asc" },            // 4. Fewer streak breaks
+      { totalCompletedTasks: "desc" },    // 5. Total completed tasks
+      { createdAt: "asc" },               // 6. Earlier account creation/snapshot date
+    ],
+    take: 10,
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          image: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+};
+

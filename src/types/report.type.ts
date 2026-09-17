@@ -10,10 +10,14 @@ export interface YearlyReportPDFData {
   finalRank?: number | null;
 }
 
-export interface LeaderboardUserSummary {
+export interface LeaderboardSnapshotRecord {
   id: string;
-  name: string;
-  image?: string | null;
+  userId: string;
+  year: number;
+  consistencyPct: number;
+  currentStreakAtEnd: number;
+  longestStreakAtEnd: number;
+  streakBreaks: number;
+  totalCompletedTasks: number;
   createdAt: Date;
 }
-
