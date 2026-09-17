@@ -2,6 +2,8 @@ import express from "express";
 import type { Request, Response } from "express";
 import cors from "cors";
 import { sendSuccess } from "./utils/response.util.js";
+import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth.js";
 
 const app = express();
 
@@ -17,5 +19,12 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (_req: Request, res: Response) => {
   sendSuccess(res, "Welcome to the Consista API");
 });
+
+
+// Better Auth All Routes
+app.all("/api/auth/*", toNodeHandler(auth));
+
+
+
 
 export default app;
