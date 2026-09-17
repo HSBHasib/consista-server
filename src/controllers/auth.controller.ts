@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { sendOtp, verifyOtp } from "@/services/otp.service.js";
 import { auth } from "@/lib/auth.js";
 import { sendSuccess, sendError } from "@/utils/response.util.js";
-import { sendOtpSchema, verifyOtpSchema } from "@/validations/auth.validation.js";
+import { sendOtpSchema, verifyOtpSchema, loginSchema } from "@/validations/auth.validation.js";
 
 // ================================
 // Send OTP to user's email
@@ -57,3 +57,39 @@ export const handleVerifyOtp = async (req: Request, res: Response) => {
 
   return sendSuccess(res, "OTP verified successfully", { email, verified: true });
 };
+
+
+// ================================
+// Login user
+// ================================
+export const handleLogin = async (req: Request, res: Response) => {
+  const parseResult = loginSchema.safeParse(req.body);
+  if (!parseResult.success) {
+    const errorMessage = parseResult.error.issues[0]?.message || "Invalid input data";
+    return sendError(res, errorMessage, 400);
+  }
+
+  const { email, password } = parseResult.data;
+
+  try {
+    const response = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      asResponse: true,  // Convert Better-Auth response to Express response
+    });
+
+    // Better-Auth Response to Express Response
+    const setCookieHeader = response.headers.get("set-cookie");
+    if (setCookieHeader) {
+      res.setHeader("Set-Cookie", setCookieHeader);
+    }
+
+    const data = await response.json();
+    return sendSuccess(res, "Logged in successfully", data);
+  } catch (error: any) {
+    return sendError(res, error.message || "Invalid email or password", 401);
+  }
+};
+
