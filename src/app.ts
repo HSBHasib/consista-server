@@ -9,6 +9,7 @@ import userRoutes from "@/routes/user.route.js";
 import taskRoutes from "@/routes/task.route.js";
 import analyticsRouter from "@/routes/analytics.route.js";
 import deviceTokenRouter from "@/routes/deviceToken.route.js";
+import reportRouter from "@/routes/report.route.js";
 
 
 const app = express();
@@ -28,11 +29,12 @@ app.get("/", (_req: Request, res: Response) => {
 
 
 // API Routes
-app.use("/api/v1/auth", authRoutes);                  // OTP Authentication Routes
-app.use("/api/v1/users", userRoutes);                 // User Management Routes
-app.use("/api/v1/tasks", taskRoutes);                 // Task Management Routes
-app.use("/api/v1/analytics", analyticsRouter);        // Analytics Routes
-app.use("/api/v1/device-tokens", deviceTokenRouter);  // Device Token Routes
+app.use("/api/v1/auth", authRoutes);                    // OTP Authentication Routes
+app.use("/api/v1/users", userRoutes);                   // User Management Routes
+app.use("/api/v1/tasks", taskRoutes);                   // Task Management Routes
+app.use("/api/v1/analytics", analyticsRouter);          // Analytics Routes
+app.use("/api/v1/device-tokens", deviceTokenRouter);    // Device Token Routes
+app.use("/api/v1/reports", reportRouter);               // Report Routes
 
 
 // Better Auth All Routes
@@ -40,3 +42,4 @@ app.all("/api/auth/*path", toNodeHandler(auth));
 
 
 export default app;
+
