@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+// ================================
+// Create Task Schema
+// ================================
 export const createTaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
@@ -12,4 +15,22 @@ export const createTaskSchema = z.object({
   startDate: z.string().datetime({ message: "Invalid ISO date format" }),
 });
 
+
+// ================================
+// Type for the input data when creating a task
+// ================================
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
+
+
+// ================================
+// Type for the input data when updating occurrence status
+// ================================
+export const updateOccurrenceStatusSchema = z.object({
+  status: z.enum(["COMPLETED", "MISSED", "PENDING"]),
+});
+
+
+// ================================
+// Type for the input data when updating occurrence status
+// ================================
+export type UpdateOccurrenceStatusInput = z.infer<typeof updateOccurrenceStatusSchema>;

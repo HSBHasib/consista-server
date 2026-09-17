@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { handleCreateTask, handleGetUserTasks } from "@/controllers/task.controller.js";
+import { handleCreateTask, handleGetUserTasks, handleUpdateOccurrenceStatus } from "@/controllers/task.controller.js";
 import { requireAuth } from "@/middlewares/auth.middleware.js";
 
 const router = Router();
 
 router.use(requireAuth);
 
-router.post("/", handleCreateTask);
-router.get("/", handleGetUserTasks);
+router.post("/", handleCreateTask);         // Create a new task
+router.get("/", handleGetUserTasks);        // Get user tasks
+router.patch("/occurrences/:occurrenceId/status", handleUpdateOccurrenceStatus);    // Update occurrence status
 
 export default router;
-

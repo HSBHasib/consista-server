@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth.js";
 import { sendSuccess, sendError } from "@/utils/response.util.js";
 import { sendOtpSchema, verifyOtpSchema, loginSchema, resetPasswordSchema } from "@/validations/auth.validation.js";
 import { prisma } from "@/config/prisma.js";
-import bcrypt from "bcryptjs";
+import { hashPassword } from "better-auth/crypto";
 
 // ================================
 // Send OTP to user's email
@@ -112,8 +112,8 @@ export const handleResetPassword = async (req: Request, res: Response) => {
     // Verify OTP
     await verifyOtp(email, otp);
 
-    // Hash new password using bcryptjs
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Hash new password using Better-Auth's built-in hashing tool
+    const hashedPassword = await hashPassword(newPassword);
 
     // Find User by email
     const user = await prisma.user.findUnique({
@@ -124,7 +124,7 @@ export const handleResetPassword = async (req: Request, res: Response) => {
       return sendError(res, "User not found", 404);
     }
 
-    // Update password in Better-Auth's credential Account table
+    // Update Password in Account table
     await prisma.account.updateMany({
       where: {
         userId: user.id,
