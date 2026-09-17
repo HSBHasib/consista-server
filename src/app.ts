@@ -1,6 +1,6 @@
 import express from "express";
-import type { Request, Response } from "express";
 import cors from "cors";
+import type { Request, Response } from "express";
 import { sendSuccess } from "./utils/response.util.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
@@ -8,6 +8,7 @@ import authRoutes from "@/routes/auth.route.js";
 import userRoutes from "@/routes/user.route.js";
 import taskRoutes from "@/routes/task.route.js";
 import analyticsRouter from "@/routes/analytics.route.js";
+import deviceTokenRouter from "@/routes/deviceToken.route.js";
 
 
 const app = express();
@@ -27,10 +28,12 @@ app.get("/", (_req: Request, res: Response) => {
 
 
 // API Routes
-app.use("/api/v1/auth", authRoutes);              // OTP Authentication Routes
-app.use("/api/v1/users", userRoutes);             // User Management Routes
-app.use("/api/v1/tasks", taskRoutes);             // Task Management Routes
-app.use("/api/v1/analytics", analyticsRouter);    // Analytics Routes
+app.use("/api/v1/auth", authRoutes);                  // OTP Authentication Routes
+app.use("/api/v1/users", userRoutes);                 // User Management Routes
+app.use("/api/v1/tasks", taskRoutes);                 // Task Management Routes
+app.use("/api/v1/analytics", analyticsRouter);        // Analytics Routes
+app.use("/api/v1/device-tokens", deviceTokenRouter);  // Device Token Routes
+
 
 // Better Auth All Routes
 app.all("/api/auth/*path", toNodeHandler(auth));
