@@ -5,6 +5,7 @@ import { sendSuccess } from "./utils/response.util.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
 import authRoutes from "@/routes/auth.route.js";
+import userRoutes from "@/routes/user.route.js";
 const app = express();
 
 // ==========================================
@@ -20,13 +21,13 @@ app.get("/", (_req: Request, res: Response) => {
   sendSuccess(res, "Welcome to the Consista API");
 });
 
-// Custom OTP Authentication Routes
-app.use("/api/v1/auth", authRoutes);
+
+// API Routes
+app.use("/api/v1/auth", authRoutes);        // OTP Authentication Routes
+app.use("/api/v1/users", userRoutes);       // User Management Routes
 
 // Better Auth All Routes
-app.all("/api/auth/*", toNodeHandler(auth));
-
-
+app.all("/api/auth/*path", toNodeHandler(auth));
 
 
 export default app;
