@@ -1,5 +1,8 @@
-import cron from "node-cron";
 import { prisma } from "@/config/prisma.js";
+import cron from "node-cron";
+import { determineDailyStatus } from "@/services/activity.service.js";
+import { getLocalHourForTimezone, getLocalDateString } from "@/utils/date.util.js";
+import { OccurrenceStatus } from "@/generated/prisma/enums.js";
 
 
 // =================================
@@ -98,8 +101,131 @@ export const initCronJobs = () => {
   });
 };
 
+// ===============================
+// Initialize Timezone-Specific Cron Jobs
+// ===============================
+export const initTimezoneCronJobs = () => {
+  // Runs every hour at minute 0
+  cron.schedule("0 * * * *", async () => {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        timezone: true,
+        currentStreak: true,
+        longestStreak: true,
+      },
+    });
+
+    const now = new Date();
+
+    for (const user of users) {
+      const userTimezone = user.timezone || "UTC";
+      const localHour = getLocalHourForTimezone(now, userTimezone);
+
+      // Trigger processing when local time strikes 00:00 (midnight)
+      if (localHour === 0) {
+        await processUserLocalMidnight(
+          user.id,
+          userTimezone,
+          user.currentStreak,
+          user.longestStreak
+        );
+      }
+    }
+  });
+};
 
 
+// ===============================
+// Process user-specific midnight tasks based on their timezone
+// ===============================
+const processUserLocalMidnight = async (
+  userId: string,
+  userTimezone: string,
+  currentStreak: number,
+  longestStreak: number
+) => {
+  // Get yesterday's local calendar date (YYYY-MM-DD)
+  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const dateStr = getLocalDateString(yesterday, userTimezone);
 
+  // Mark overdue PENDING occurrences as MISSED
+  await prisma.taskOccurrence.updateMany({
+    where: {
+      userId,
+      status: OccurrenceStatus.PENDING,
+      scheduledAt: { lt: new Date() },
+    },
+    data: { status: OccurrenceStatus.MISSED },
+  });
 
+  // Aggregate occurrences for the finalized day
+  const occurrences = await prisma.taskOccurrence.findMany({
+    where: {
+      userId,
+      scheduledAt: { gte: new Date(dateStr) },
+    },
+  });
+
+  const totalRequired = occurrences.filter((o) => o.isRequired).length;
+  const completedRequired = occurrences.filter(
+    (o) => o.isRequired && o.status === OccurrenceStatus.COMPLETED
+  ).length;
+  const totalOptional = occurrences.filter((o) => !o.isRequired).length;
+  const completedOptional = occurrences.filter(
+    (o) => !o.isRequired && o.status === OccurrenceStatus.COMPLETED
+  ).length;
+
+  const status = determineDailyStatus({
+    totalRequired,
+    completedRequired,
+    totalOptional,
+    completedOptional,
+  });
+
+  // Upsert DailyActivity
+  await prisma.dailyActivity.upsert({
+    where: {
+      userId_date: { userId, date: dateStr },
+    },
+    update: {
+      status,
+      totalRequiredTasks: totalRequired,
+      completedRequiredTasks: completedRequired,
+      totalOptionalTasks: totalOptional,
+      completedOptionalTasks: completedOptional,
+    },
+    create: {
+      userId,
+      date: dateStr,
+      status,
+      totalRequiredTasks: totalRequired,
+      completedRequiredTasks: completedRequired,
+      totalOptionalTasks: totalOptional,
+      completedOptionalTasks: completedOptional,
+    },
+  });
+
+  // Recalculate streak
+  let newCurrentStreak = currentStreak;
+  if (status === "SUCCESSFUL") {
+    newCurrentStreak += 1;
+  } else if (
+    status === "MISSED" ||
+    status === "NO_ACTIVITY" ||
+    status === "OPTIONAL_ONLY"
+  ) {
+    newCurrentStreak = 0;
+  }
+
+  const newLongestStreak = Math.max(longestStreak, newCurrentStreak);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      currentStreak: newCurrentStreak,
+      longestStreak: newLongestStreak,
+    },
+  });
+};
 
