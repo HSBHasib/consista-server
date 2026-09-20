@@ -1,4 +1,4 @@
-import { prisma } from "@/config/prisma.js";
+import { prisma } from "@/lib/prisma.js";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
 import type { UpdateProfileInput, ChangePasswordInput } from "@/validations/user.validation.js";
 

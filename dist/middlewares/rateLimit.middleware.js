@@ -29,13 +29,13 @@ export const apiRateLimiter = rateLimit({
 // Contact form rate limiter
 // ==================================
 export const contactRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // Limit each IP to 5 requests per windowMs
+    windowMs: 8 * 60 * 1000, // 8 minutes
+    max: 6, // Limit each IP to 6 requests per windowMs
     standardHeaders: true,
     legacyHeaders: false,
     message: {
         success: false,
-        message: "Too many contact requests from this IP. Please try again after 15 minutes.",
+        message: "Too many contact requests from this IP. Please try again after 8 minutes.",
     },
 });
 //# sourceMappingURL=rateLimit.middleware.js.map

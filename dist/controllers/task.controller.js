@@ -1,7 +1,7 @@
-import prisma from "../config/prisma.js";
 import { createTaskSchema, updateOccurrenceStatusSchema } from "../validations/task.validation.js";
 import { createNewTask, updateOccurrenceStatus } from "../services/task.service.js";
 import { sendSuccess, sendError } from "../utils/response.util.js";
+import { prisma } from "../lib/prisma.js";
 // =============================================
 // Controller function to create a new task
 // =============================================

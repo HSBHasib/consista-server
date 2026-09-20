@@ -26,6 +26,10 @@ model User {
   currentStreak Int       @default(0)
   longestStreak Int       @default(0)
 
+  lastCompletedDate DateTime?
+  performanceScore  Float?     @default(0)
+  pushToken         String?
+
   sessions      Session[]
   accounts      Account[]
 

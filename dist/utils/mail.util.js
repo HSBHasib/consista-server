@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
+// =================================
 // Create reusable SMTP transporter instance
+// =================================
 export const transporter = nodemailer.createTransport({
     host: env.SMTP_HOST,
     port: Number(env.SMTP_PORT),
@@ -10,7 +12,9 @@ export const transporter = nodemailer.createTransport({
         pass: env.SMTP_PASS,
     },
 });
+// =================================
 // Helper function to send OTP email
+// =================================
 export async function sendOtpEmail(toEmail, otpCode) {
     try {
         await transporter.sendMail({

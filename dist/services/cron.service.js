@@ -1,4 +1,4 @@
-import { prisma } from "../config/prisma.js";
+import { prisma } from "../lib/prisma.js";
 import cron from "node-cron";
 import { determineDailyStatus } from "./activity.service.js";
 import { getLocalHourForTimezone, getLocalDateString } from "../utils/date.util.js";

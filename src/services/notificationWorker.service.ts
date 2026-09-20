@@ -1,4 +1,4 @@
-import { prisma } from "@/config/prisma.js";
+import { prisma } from "@/lib/prisma.js";
 import { OccurrenceStatus, Urgency } from "@/generated/prisma/browser.js";
 import cron from "node-cron";
     

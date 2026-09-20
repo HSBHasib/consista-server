@@ -27,6 +27,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@better-auth/prisma-adapter": "^1.7.5",
     "@prisma/adapter-pg": "^7.10.0",
     "@prisma/client": "^7.9.1",
     "bcryptjs": "^3.0.3",

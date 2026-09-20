@@ -1,4 +1,4 @@
-import { prisma } from "../config/prisma.js";
+import { prisma } from "../lib/prisma.js";
 export const getSystemMetrics = async () => {
     const [totalUsers, totalTasks, totalOccurrences, completedOccurrences] = await Promise.all([
         prisma.user.count(),

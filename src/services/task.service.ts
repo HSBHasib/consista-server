@@ -1,4 +1,4 @@
-import prisma from "@/config/prisma.js";
+import { prisma }  from "@/lib/prisma.js";
 import type { CreateTaskInput } from "@/validations/task.validation.js";
 import type { UpdateOccurrenceStatusInput } from "@/validations/task.validation.js";
 

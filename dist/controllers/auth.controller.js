@@ -2,7 +2,7 @@ import { sendOtp, verifyOtp } from "../services/otp.service.js";
 import { auth } from "../lib/auth.js";
 import { sendSuccess, sendError } from "../utils/response.util.js";
 import { sendOtpSchema, verifyOtpSchema, loginSchema, resetPasswordSchema } from "../validations/auth.validation.js";
-import { prisma } from "../config/prisma.js";
+import { prisma } from "../lib/prisma.js";
 import { hashPassword } from "better-auth/crypto";
 // ================================
 // Send OTP to user's email

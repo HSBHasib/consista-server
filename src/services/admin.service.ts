@@ -1,4 +1,4 @@
-import { prisma } from "@/config/prisma.js";
+import { prisma } from "@/lib/prisma.js";
 import type { AdminMetricsResponse } from "@/types/admin.type.js";
 
 export const getSystemMetrics = async (): Promise<AdminMetricsResponse> => {

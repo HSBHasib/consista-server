@@ -6,5 +6,15 @@ export declare const auth: import("better-auth").Auth<{
         autoSignIn: false;
         enabled: true;
     };
+    socialProviders: {
+        google: {
+            clientId: string;
+            clientSecret: string;
+        };
+        github: {
+            clientId: string;
+            clientSecret: string;
+        };
+    };
 }>;
 //# sourceMappingURL=auth.d.ts.map

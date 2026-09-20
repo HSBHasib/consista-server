@@ -20,6 +20,7 @@ export const sendContactEmail = async (data) => {
       <p style="font-size: 12px; color: #777;">This email was sent via the Consista Contact / Support Form.</p>
     </div>
   `;
+    // Admin/Support email
     await transporter.sendMail({
         from: `"Consista" <${process.env.SMTP_USER}>`,
         to: adminEmail,

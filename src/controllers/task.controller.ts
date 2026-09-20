@@ -1,8 +1,8 @@
-import prisma from "@/config/prisma.js";
 import type { Request, Response } from "express";
 import { createTaskSchema, updateOccurrenceStatusSchema } from "@/validations/task.validation.js";
 import { createNewTask, updateOccurrenceStatus } from "@/services/task.service.js";
 import { sendSuccess, sendError } from "@/utils/response.util.js";
+import { prisma } from "@/lib/prisma.js";
 
 
 // =============================================
