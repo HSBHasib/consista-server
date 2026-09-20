@@ -5,6 +5,7 @@ const envSchema = z.object({
     PORT: z.string().min(1, "PORT is required"),
     NODE_ENV: z.enum(["development", "production", "test"]),
     BASE_URL: z.string().url("BASE_URL must be a valid URL"),
+    NEXT_PUBLIC_CLIENT_URL: z.string().url("CLIENT_URL must be a valid URL"),
     // Database
     DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
     // Better Auth

@@ -2,6 +2,7 @@ export declare const env: {
     PORT: string;
     NODE_ENV: "development" | "production" | "test";
     BASE_URL: string;
+    NEXT_PUBLIC_CLIENT_URL: string;
     DATABASE_URL: string;
     BETTER_AUTH_SECRET: string;
     BETTER_AUTH_URL: string;

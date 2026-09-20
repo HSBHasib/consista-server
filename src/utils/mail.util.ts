@@ -36,8 +36,7 @@ export async function sendOtpEmail(toEmail: string, otpCode: string): Promise<bo
       `,
     });
     return true;
-  } catch (error) {
-    console.error("❌ Email sending error:", error);
+  } catch {
     return false;
   }
 }

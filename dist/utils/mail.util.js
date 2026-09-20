@@ -34,8 +34,7 @@ export async function sendOtpEmail(toEmail, otpCode) {
         });
         return true;
     }
-    catch (error) {
-        console.error("❌ Email sending error:", error);
+    catch {
         return false;
     }
 }

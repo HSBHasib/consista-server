@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import type { Request, Response } from "express";
 import { sendSuccess } from "./utils/response.util.js";
-import authRoutes from "@/routes/auth.route.js";
+// import authRoutes from "@/routes/auth.route.js";
 import userRoutes from "@/routes/user.route.js";
 import taskRoutes from "@/routes/task.route.js";
 import analyticsRouter from "@/routes/analytics.route.js";
@@ -31,7 +31,9 @@ app.get("/", (_req: Request, res: Response) => {
 // ==========================================
 // API Routes
 // ==========================================
-app.use("/api/v1/auth", authRoutes);                    // OTP Authentication Routes
+// app.use("/api/v1/auth", authRoutes);                    // OTP Authentication Routes
+
+
 app.use("/api/v1/users", userRoutes);                   // User Management Routes
 app.use("/api/v1/tasks", taskRoutes);                   // Task Management Routes
 app.use("/api/v1/analytics", analyticsRouter);          // Analytics Routes
