@@ -15,6 +15,19 @@ export const auth = betterAuth({
         autoSignIn: false,
         enabled: true,
     },
+    user: {
+        additionalFields: {
+            role: {
+                type: "string",
+                defaultValue: "USER",
+                input: false,
+            },
+            timezone: {
+                type: "string",
+                defaultValue: "UTC",
+            },
+        },
+    },
     plugins: [
         emailOTP({
             expiresIn: 300,

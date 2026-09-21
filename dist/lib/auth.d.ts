@@ -7,6 +7,19 @@ export declare const auth: import("better-auth").Auth<{
         autoSignIn: false;
         enabled: true;
     };
+    user: {
+        additionalFields: {
+            role: {
+                type: "string";
+                defaultValue: string;
+                input: false;
+            };
+            timezone: {
+                type: "string";
+                defaultValue: string;
+            };
+        };
+    };
     plugins: [{
         id: "email-otp";
         version: string;
